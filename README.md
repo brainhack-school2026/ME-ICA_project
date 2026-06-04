@@ -1,5 +1,5 @@
 # ME-ICA_project
-Task-Based Functional Connectivity for ME-ICA
+Task-Based Functional Connectivity for ME-ICA:
 Can ME-ICA generate a consistent subject-level connectivity matrix for individuals with high task-correlated motion that is robust enough for clinical diagnostic use, such as in chronic stroke patients? 
 
 Using openneuro for the dataset here: https://github.com/OpenNeuroDatasets/ds007661 / https://openneuro.org/datasets/ds007661/versions/1.0.0 

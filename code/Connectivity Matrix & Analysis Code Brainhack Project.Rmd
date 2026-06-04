@@ -1,0 +1,458 @@
+---
+title: "Connectivity Matrix & Analysis Code Brainhack Project"
+author: "John Lio, Arshiya Khurmi, Kelei Xiao, Pirinthiya Thayaparan"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\newpage
+
+```{r eval=FALSE}
+# Step 1 - Install & Load Packages 
+
+library(RNifti)
+library(jsonlite)
+library(pheatmap)
+library(signal)
+library(tidyverse)
+```
+
+# Creating the Matrix
+
+```{r eval=FALSE}
+# Step 2 - Set Paths
+
+data_dir <- "../data/ds007661/sub-01/func"
+
+bold_path <- file.path(data_dir, "sub-01_task-handgrasp_run-1_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz")
+mask_path <- file.path(data_dir, "sub-01_task-handgrasp_run-1_space-MNI152NLin2009cAsym_desc-brain_mask.nii.gz")
+conf_path <- file.path(data_dir, "sub-01_task-handgrasp_run-1_desc-confounds_timeseries.tsv")
+```
+
+
+```{r eval=FALSE}
+# Step 3 - Download Schaefer 200 Atlas (2 mm MNI space) 
+
+atlas_path <- "Schaefer2018_200Parcels_7Networks_order_FSLMNI152_2mm.nii.gz"
+
+if (!file.exists(atlas_path)) {
+  download.file(
+    url = paste0(
+      "https://raw.githubusercontent.com/ThomasYeoLab/CBIG/master/",
+      "stable_projects/brain_parcellation/Schaefer2018_LocalGlobal/",
+      "Parcellations/MNI/",
+      "Schaefer2018_200Parcels_7Networks_order_FSLMNI152_2mm.nii.gz"
+    ),
+    destfile = atlas_path,
+    mode = "wb"
+  )
+  message("Schaefer 200 atlas downloaded.")
+}
+```
+
+
+```{r eval=FALSE}
+# Step 4 - Resample Atlas To Match Bold Dimensions
+
+resample_atlas_to_bold <- function(atlas_path, bold_path) {
+  atlas <- readNifti(atlas_path)
+  bold  <- readNifti(bold_path)
+
+  atlas_arr <- as.array(atlas)
+  bold_dims <- dim(bold)[1:3]
+
+  cat("Atlas dims:", dim(atlas_arr)[1:3], "\n")
+  cat("Target BOLD dims:", bold_dims, "\n")
+
+  scale <- bold_dims / dim(atlas_arr)[1:3]
+  out   <- array(0L, dim = bold_dims)
+
+  for (x in seq_len(bold_dims[1])) {
+    ax <- min(round(x / scale[1]), dim(atlas_arr)[1])
+    for (y in seq_len(bold_dims[2])) {
+      ay <- min(round(y / scale[2]), dim(atlas_arr)[2])
+      for (z in seq_len(bold_dims[3])) {
+        az           <- min(round(z / scale[3]), dim(atlas_arr)[3])
+        out[x, y, z] <- atlas_arr[ax, ay, az]
+      }
+    }
+  }
+
+  result   <- asNifti(out, template = bold)
+  out_path <- "Schaefer200_resampled.nii.gz"
+  writeNifti(result, out_path)
+  cat("Saved resampled atlas to:", out_path, "\n")
+  return(out_path)
+}
+
+atlas_resampled_path <- resample_atlas_to_bold(atlas_path, bold_path)
+
+# Verify dims now match
+cat("Resampled atlas dims:", dim(as.array(readNifti(atlas_resampled_path)))[1:3], "\n")
+# Should print: 62 77 82
+```
+
+
+```{r eval=FALSE}
+# Step 5 - Get TR from JSON Sidecar 
+
+json_path <- file.path(data_dir, "sub-01_task-handgrasp_run-1_space-MNI152NLin2009cAsym_desc-preproc_bold.json")
+
+TR <- fromJSON(json_path)$RepetitionTime
+cat("TR is:", TR, "seconds\n")
+```
+
+
+```{r eval=FALSE}
+# Step 6 - Extract ROI Time Series (Averages the BOLD signal within each of the 200 brain parcels)
+
+extract_roi_timeseries <- function(bold_path, atlas_path, mask_path) {
+
+  message("Loading BOLD (this may take a moment)...")
+  bold_arr  <- as.array(readNifti(bold_path))
+  atlas_vec <- as.vector(as.array(readNifti(atlas_path)))
+  mask_vec  <- as.vector(as.array(readNifti(mask_path))) > 0
+
+  dims     <- dim(bold_arr)
+  n_t      <- dims[4]
+  bold_mat <- matrix(bold_arr, nrow = prod(dims[1:3]), ncol = n_t)
+
+  bold_mat[!mask_vec, ] <- NA
+
+  roi_ids <- sort(unique(atlas_vec[atlas_vec > 0]))
+  roi_ts  <- matrix(NA, nrow = n_t, ncol = length(roi_ids),
+                    dimnames = list(NULL, paste0("ROI_", roi_ids)))
+
+  for (i in seq_along(roi_ids)) {
+    idx <- which(atlas_vec == roi_ids[i] & mask_vec)
+    if (length(idx) == 0) next
+    roi_ts[, i] <- colMeans(bold_mat[idx, , drop = FALSE], na.rm = TRUE)
+  }
+
+  message("Extracted ", ncol(roi_ts), " ROI time series, ", n_t, " timepoints each.")
+  return(roi_ts)
+}
+```
+
+
+```{r eval=FALSE}
+# Step 7 - Regress Out Noise (WM + CSF)
+
+regress_confounds <- function(roi_ts, conf_path) {
+
+  conf <- read.table(conf_path, header = TRUE, sep = "\t", na.strings = "n/a")
+
+  keep_cols <- intersect(c("white_matter", "csf"), names(conf))
+
+  if (length(keep_cols) == 0) {
+    message("No WM/CSF confounds found — skipping regression.")
+    return(roi_ts)
+  }
+
+  conf_mat <- as.matrix(conf[, keep_cols, drop = FALSE])
+  conf_mat[is.na(conf_mat)] <- 0
+
+  cleaned <- apply(roi_ts, 2, function(y) {
+    y[is.na(y)] <- mean(y, na.rm = TRUE)
+    residuals(lm(y ~ conf_mat))
+  })
+
+  message("Confound regression done.")
+  return(cleaned)
+}
+```
+
+
+```{r eval=FALSE}
+# Step 8 - Bandpass Filter (keep 0.01–0.1 Hz brain rhythms)
+
+bandpass_filter <- function(ts_mat, TR, low = 0.01, high = 0.1) {
+  nyq <- (1 / TR) / 2
+  bf  <- butter(3, c(low / nyq, high / nyq), type = "pass")
+
+  filtered <- apply(ts_mat, 2, function(x) {
+    x[is.na(x)] <- mean(x, na.rm = TRUE)
+    as.numeric(filtfilt(bf, x))
+  })
+
+  message("Bandpass filter applied (", low, "–", high, " Hz).")
+  return(filtered)
+}
+```
+
+
+```{r eval=FALSE}
+# Step 9 - Compute Connectivity Matrix (Pearson correlation + Fisher's z-transform)
+
+compute_connectivity <- function(roi_ts_clean) {
+  r_mat <- cor(roi_ts_clean, use = "pairwise.complete.obs")
+  z_mat <- atanh(r_mat)
+  diag(z_mat) <- 0
+  return(z_mat)
+}
+```
+
+
+```{r eval=FALSE}
+# Step 10 - Run The Full Pipeline For All Subjects & Runs 
+# Note: use atlas_resampled_path from Step 4
+
+roi_ts    <- extract_roi_timeseries(bold_path, atlas_resampled_path, mask_path)
+roi_clean <- regress_confounds(roi_ts, conf_path)
+roi_filt  <- bandpass_filter(roi_clean, TR)
+conn_mat  <- compute_connectivity(roi_filt)
+
+cat("Connectivity matrix dimensions:", dim(conn_mat), "\n") # should be 200 x 200
+```
+
+# Plotting the Matrices & Storing the Data
+
+```{r eval=FALSE}
+# Step 11 - Plot The Matrix 
+
+pheatmap(
+  mat          = conn_mat,
+  cluster_rows = TRUE,
+  cluster_cols = TRUE,
+  color        = colorRampPalette(c("blue", "white", "red"))(100),
+  breaks       = seq(-1, 1, length.out = 101),
+  main         = "sub-0# run-# Connectivity Matrix (Schaefer 200 ROIs)",
+  show_rownames = FALSE,
+  show_colnames = FALSE,
+  fontsize     = 8
+)
+```
+
+
+```{r eval=FALSE}
+# Step 12 - Manually Store Each Subject + Run 
+# After running Step 10 for each subject/run, store conn_mat here.
+# Format: all_conn_runs[["sub-XX"]][["run-Y"]] <- conn_mat
+# Initialize the storage list once at the start (run this only once)
+
+all_conn_runs <- list() 
+
+# Save after each sub & run
+saveRDS(all_conn_runs, "all_conn_runs.rds")
+
+# --- sub-01 ---
+all_conn_runs[["sub-01"]][["run-1"]] <- conn_mat
+all_conn_runs[["sub-01"]][["run-2"]] <- conn_mat
+
+# --- sub-02 ---
+all_conn_runs[["sub-02"]][["run-1"]] <- conn_mat
+all_conn_runs[["sub-02"]][["run-2"]] <- conn_mat
+
+# --- sub-03 ---
+all_conn_runs[["sub-03"]][["run-1"]] <- conn_mat
+all_conn_runs[["sub-03"]][["run-2"]] <- conn_mat
+
+# --- sub-04 ---
+all_conn_runs[["sub-04"]][["run-1"]] <- conn_mat
+all_conn_runs[["sub-04"]][["run-2"]] <- conn_mat
+
+# --- sub-05 ---
+all_conn_runs[["sub-05"]][["run-1"]] <- conn_mat
+all_conn_runs[["sub-05"]][["run-2"]] <- conn_mat
+
+# --- sub-06 ---
+all_conn_runs[["sub-06"]][["run-1"]] <- conn_mat
+all_conn_runs[["sub-06"]][["run-2"]] <- conn_mat
+
+# --- sub-07 ---
+all_conn_runs[["sub-07"]][["run-1"]] <- conn_mat
+all_conn_runs[["sub-07"]][["run-2"]] <- conn_mat
+
+# --- sub-08 ---
+all_conn_runs[["sub-08"]][["run-1"]] <- conn_mat
+all_conn_runs[["sub-08"]][["run-2"]] <- conn_mat
+```
+
+
+```{r eval=FALSE}
+# Check To See If Subject Is Stored Correctly 
+
+str(all_conn_runs)  # double check everything is there
+
+# Should show: List of 2 
+#  $ run-1: num [1:200, 1:200] ...
+#  $ run-2: num [1:200, 1:200] ...
+```
+
+# Statistical Analysis
+
+```{r eval=FALSE}
+# Step 13 - Run-to-Run Consistency (Pearson r of upper triangle)
+
+# Loading all the Data from the Matrix to run Steps 13 & 14 (if not doing it all in one step)
+library(RNifti)
+all_conn_runs <- readRDS("all_conn_runs.rds")
+
+subjects <- paste0("sub-0", 1:8)
+
+cat("\n--- Run-to-run consistency (Pearson r of upper triangle) ---\n")
+
+for (sub in subjects) {
+  mats <- all_conn_runs[[sub]]
+  if (is.null(mats[["run-1"]]) || is.null(mats[["run-2"]])) {
+    cat(sub, ": missing a run — skipping\n")
+    next
+  }
+  idx <- upper.tri(mats[["run-1"]])
+  r   <- cor(mats[["run-1"]][idx], mats[["run-2"]][idx])
+  cat(sub, ": r =", round(r, 3), "\n")
+}
+# Values > 0.7 suggest the matrix is stable enough for clinical use
+```
+
+
+```{r eval=FALSE}
+# Step 14 - Average Runs Per Subject (once both runs are stored)
+
+all_conn <- list()
+
+for (sub in subjects) {
+  mats <- all_conn_runs[[sub]]
+  if (is.null(mats)) next
+  
+  if (!is.null(mats[["run-1"]]) && !is.null(mats[["run-2"]])) {
+    all_conn[[sub]] <- (mats[["run-1"]] + mats[["run-2"]]) / 2
+    cat(sub, ": averaged across runs\n")
+  } else if (!is.null(mats[["run-1"]])) {
+    all_conn[[sub]] <- mats[["run-1"]]
+    cat(sub, ": only run-1 available\n")
+  } else if (!is.null(mats[["run-2"]])) {
+    all_conn[[sub]] <- mats[["run-2"]]
+    cat(sub, ": only run-2 available\n")
+  }
+}
+
+saveRDS(all_conn, "all_conn_averaged.rds")
+
+# Loading all the Data from the Matrix to run Steps 13 & 14
+library(RNifti)
+all_conn_runs <- readRDS("all_conn_runs.rds")
+```
+
+# Precentral Gyrus ROI Analysis & Plot
+
+```{r eval=FALSE}
+# In Schaefer 200 parcels, Somatomotor network ROIs (roughly ROI 30-67) cover precentral gyrus / primary motor cortex.
+# We target the core precentral gyrus ROIs specifically.
+
+library(ggplot2)
+library(pheatmap)
+
+# These are the Somatomotor network ROI indices in Schaefer 200 that correspond to precentral gyrus / M1
+precentral_rois <- 30:67 # Somatomotor network parcels
+
+roi_names <- paste0("ROI_", precentral_rois)
+```
+
+
+```{r eval=FALSE}
+# Step 1 - Extract Mean Connectivity Of Precentral Gyrus (how strongly is M1 connected to the rest of the brain on average per sub)
+
+subjects <- paste0("sub-0", 1:8)
+
+precentral_conn <- sapply(subjects, function(sub) {
+  mat  <- all_conn[[sub]]                         # 200 x 200 matrix
+  idx  <- which(colnames(mat) %in% roi_names)     # find precentral ROIs
+  # Mean connectivity of precentral ROIs to ALL other ROIs
+  mean(mat[idx, -idx], na.rm = TRUE)
+})
+
+cat("\n--- Mean Precentral Gyrus Connectivity per Subject ---\n")
+print(round(precentral_conn, 3))
+```
+
+
+```{r eval=FALSE}
+# Step 2 - Bar Plot: Precentral Connectivity Per Subject
+
+df_bar <- data.frame(
+  Subject     = names(precentral_conn),
+  Connectivity = as.numeric(precentral_conn)
+)
+
+ggplot(df_bar, aes(x = Subject, y = Connectivity, fill = Connectivity)) +
+  geom_bar(stat = "identity", color = "black", width = 0.6) +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  geom_hline(yintercept = mean(precentral_conn), linetype = "dashed",
+             color = "black", linewidth = 0.8) +
+  annotate("text", x = 0.6, y = mean(precentral_conn) + 0.005,
+           label = "Group mean", hjust = 0, size = 3.5) +
+  labs(
+    title    = "Mean Precentral Gyrus (M1) Connectivity per Subject",
+    subtitle = "Higher values = stronger motor cortex integration\nRelevant for Parkinson's & Stroke detection via ME-ICA",
+    x        = "Subject",
+    y        = "Mean Fisher z (connectivity to rest of brain)"
+  ) +
+  theme_classic(base_size = 13) +
+  theme(legend.position = "none")
+```
+
+
+```{r eval=FALSE}
+# Step 3 - Heatmap: Precentral Gyrus ROI Connectivity (across the group - which M1 parcels are most connected?)
+
+group_avg <- Reduce("+", all_conn) / length(all_conn)
+
+idx <- which(colnames(group_avg) %in% roi_names)
+
+precentral_mat <- group_avg[idx, idx]
+
+pheatmap(
+  mat           = precentral_mat,
+  cluster_rows  = TRUE,
+  cluster_cols  = TRUE,
+  color         = colorRampPalette(c("blue", "white", "red"))(100),
+  breaks        = seq(-1, 1, length.out = 101),
+  main          = "Precentral Gyrus (M1) Inter-ROI Connectivity\n(Group Average, Schaefer 200)",
+  show_rownames = FALSE,
+  show_colnames = FALSE,
+  fontsize      = 9
+)
+```
+
+
+```{r eval=FALSE}
+# Step 4 - Find Top 10 Strongest Connections To M1 (which brain regions are most connected to motor cortex?)
+
+non_idx <- which(!colnames(group_avg) %in% roi_names)
+
+# Average connectivity from each non-M1 ROI to all M1 ROIs
+conn_to_m1 <- sapply(non_idx, function(j) {
+  mean(group_avg[idx, j], na.rm = TRUE)
+})
+
+names(conn_to_m1) <- colnames(group_avg)[non_idx]
+top10 <- sort(conn_to_m1, decreasing = TRUE)[1:10]
+
+cat("\n--- Top 10 ROIs Most Connected to Precentral Gyrus ---\n")
+print(round(top10, 3))
+
+# Plot it
+df_top <- data.frame(
+  ROI          = factor(names(top10), levels = rev(names(top10))),
+  Connectivity = as.numeric(top10)
+)
+
+ggplot(df_top, aes(x = ROI, y = Connectivity, fill = Connectivity)) +
+  geom_bar(stat = "identity", color = "black") +
+  scale_fill_gradient(low = "lightblue", high = "darkblue") +
+  coord_flip() +
+  labs(
+    title    = "Top 10 ROIs Most Connected to Precentral Gyrus (M1)",
+    subtitle = "Group average | Handgrasp task fMRI | Schaefer 200",
+    x        = "ROI",
+    y        = "Mean Fisher z to M1"
+  ) +
+  theme_classic(base_size = 12) +
+  theme(legend.position = "none")
+```
+

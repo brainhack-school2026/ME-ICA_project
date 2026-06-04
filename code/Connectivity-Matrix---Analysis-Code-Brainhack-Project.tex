@@ -1,0 +1,589 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Connectivity Matrix \& Analysis Code Brainhack Project},
+  pdfauthor={John Lio, Arshiya Khurmi, Kelei Xiao, Pirinthiya Thayaparan},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Connectivity Matrix \& Analysis Code Brainhack Project}
+\author{John Lio, Arshiya Khurmi, Kelei Xiao, Pirinthiya Thayaparan}
+\date{2026-06-04}
+
+\begin{document}
+\maketitle
+
+\newpage
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 1 {-} Install \& Load Packages }
+
+\FunctionTok{library}\NormalTok{(RNifti)}
+\FunctionTok{library}\NormalTok{(jsonlite)}
+\FunctionTok{library}\NormalTok{(pheatmap)}
+\FunctionTok{library}\NormalTok{(signal)}
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Creating the Matrix}\label{creating-the-matrix}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 2 {-} Set Paths}
+
+\NormalTok{data\_dir }\OtherTok{\textless{}{-}} \StringTok{"/projects/jlio/matrix/data/ds007661/sub{-}01/func"}
+
+\NormalTok{bold\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(data\_dir, }\StringTok{"sub{-}01\_task{-}handgrasp\_run{-}1\_space{-}MNI152NLin2009cAsym\_desc{-}preproc\_bold.nii.gz"}\NormalTok{)}
+\NormalTok{mask\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(data\_dir, }\StringTok{"sub{-}01\_task{-}handgrasp\_run{-}1\_space{-}MNI152NLin2009cAsym\_desc{-}brain\_mask.nii.gz"}\NormalTok{)}
+\NormalTok{conf\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(data\_dir, }\StringTok{"sub{-}01\_task{-}handgrasp\_run{-}1\_desc{-}confounds\_timeseries.tsv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 3 {-} Download Schaefer 200 Atlas (2 mm MNI space) }
+
+\NormalTok{atlas\_path }\OtherTok{\textless{}{-}} \StringTok{"Schaefer2018\_200Parcels\_7Networks\_order\_FSLMNI152\_2mm.nii.gz"}
+
+\ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{file.exists}\NormalTok{(atlas\_path)) \{}
+  \FunctionTok{download.file}\NormalTok{(}
+    \AttributeTok{url =} \FunctionTok{paste0}\NormalTok{(}
+      \StringTok{"https://raw.githubusercontent.com/ThomasYeoLab/CBIG/master/"}\NormalTok{,}
+      \StringTok{"stable\_projects/brain\_parcellation/Schaefer2018\_LocalGlobal/"}\NormalTok{,}
+      \StringTok{"Parcellations/MNI/"}\NormalTok{,}
+      \StringTok{"Schaefer2018\_200Parcels\_7Networks\_order\_FSLMNI152\_2mm.nii.gz"}
+\NormalTok{    ),}
+    \AttributeTok{destfile =}\NormalTok{ atlas\_path,}
+    \AttributeTok{mode =} \StringTok{"wb"}
+\NormalTok{  )}
+  \FunctionTok{message}\NormalTok{(}\StringTok{"Schaefer 200 atlas downloaded."}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 4 {-} Resample Atlas To Match Bold Dimensions}
+
+\NormalTok{resample\_atlas\_to\_bold }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(atlas\_path, bold\_path) \{}
+\NormalTok{  atlas }\OtherTok{\textless{}{-}} \FunctionTok{readNifti}\NormalTok{(atlas\_path)}
+\NormalTok{  bold  }\OtherTok{\textless{}{-}} \FunctionTok{readNifti}\NormalTok{(bold\_path)}
+
+\NormalTok{  atlas\_arr }\OtherTok{\textless{}{-}} \FunctionTok{as.array}\NormalTok{(atlas)}
+\NormalTok{  bold\_dims }\OtherTok{\textless{}{-}} \FunctionTok{dim}\NormalTok{(bold)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{]}
+
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Atlas dims:"}\NormalTok{, }\FunctionTok{dim}\NormalTok{(atlas\_arr)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{], }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Target BOLD dims:"}\NormalTok{, bold\_dims, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+
+\NormalTok{  scale }\OtherTok{\textless{}{-}}\NormalTok{ bold\_dims }\SpecialCharTok{/} \FunctionTok{dim}\NormalTok{(atlas\_arr)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{]}
+\NormalTok{  out   }\OtherTok{\textless{}{-}} \FunctionTok{array}\NormalTok{(}\DecValTok{0}\DataTypeTok{L}\NormalTok{, }\AttributeTok{dim =}\NormalTok{ bold\_dims)}
+
+  \ControlFlowTok{for}\NormalTok{ (x }\ControlFlowTok{in} \FunctionTok{seq\_len}\NormalTok{(bold\_dims[}\DecValTok{1}\NormalTok{])) \{}
+\NormalTok{    ax }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}\FunctionTok{round}\NormalTok{(x }\SpecialCharTok{/}\NormalTok{ scale[}\DecValTok{1}\NormalTok{]), }\FunctionTok{dim}\NormalTok{(atlas\_arr)[}\DecValTok{1}\NormalTok{])}
+    \ControlFlowTok{for}\NormalTok{ (y }\ControlFlowTok{in} \FunctionTok{seq\_len}\NormalTok{(bold\_dims[}\DecValTok{2}\NormalTok{])) \{}
+\NormalTok{      ay }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}\FunctionTok{round}\NormalTok{(y }\SpecialCharTok{/}\NormalTok{ scale[}\DecValTok{2}\NormalTok{]), }\FunctionTok{dim}\NormalTok{(atlas\_arr)[}\DecValTok{2}\NormalTok{])}
+      \ControlFlowTok{for}\NormalTok{ (z }\ControlFlowTok{in} \FunctionTok{seq\_len}\NormalTok{(bold\_dims[}\DecValTok{3}\NormalTok{])) \{}
+\NormalTok{        az           }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}\FunctionTok{round}\NormalTok{(z }\SpecialCharTok{/}\NormalTok{ scale[}\DecValTok{3}\NormalTok{]), }\FunctionTok{dim}\NormalTok{(atlas\_arr)[}\DecValTok{3}\NormalTok{])}
+\NormalTok{        out[x, y, z] }\OtherTok{\textless{}{-}}\NormalTok{ atlas\_arr[ax, ay, az]}
+\NormalTok{      \}}
+\NormalTok{    \}}
+\NormalTok{  \}}
+
+\NormalTok{  result   }\OtherTok{\textless{}{-}} \FunctionTok{asNifti}\NormalTok{(out, }\AttributeTok{template =}\NormalTok{ bold)}
+\NormalTok{  out\_path }\OtherTok{\textless{}{-}} \StringTok{"Schaefer200\_resampled.nii.gz"}
+  \FunctionTok{writeNifti}\NormalTok{(result, out\_path)}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Saved resampled atlas to:"}\NormalTok{, out\_path, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+  \FunctionTok{return}\NormalTok{(out\_path)}
+\NormalTok{\}}
+
+\NormalTok{atlas\_resampled\_path }\OtherTok{\textless{}{-}} \FunctionTok{resample\_atlas\_to\_bold}\NormalTok{(atlas\_path, bold\_path)}
+
+\CommentTok{\# Verify dims now match}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Resampled atlas dims:"}\NormalTok{, }\FunctionTok{dim}\NormalTok{(}\FunctionTok{as.array}\NormalTok{(}\FunctionTok{readNifti}\NormalTok{(atlas\_resampled\_path)))[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{], }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\CommentTok{\# Should print: 62 77 82}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 5 {-} Get TR from JSON Sidecar }
+
+\NormalTok{json\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(data\_dir, }\StringTok{"sub{-}01\_task{-}handgrasp\_run{-}1\_space{-}MNI152NLin2009cAsym\_desc{-}preproc\_bold.json"}\NormalTok{)}
+
+\NormalTok{TR }\OtherTok{\textless{}{-}} \FunctionTok{fromJSON}\NormalTok{(json\_path)}\SpecialCharTok{$}\NormalTok{RepetitionTime}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"TR is:"}\NormalTok{, TR, }\StringTok{"seconds}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 6 {-} Extract ROI Time Series (Averages the BOLD signal within each of the 200 brain parcels)}
+
+\NormalTok{extract\_roi\_timeseries }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(bold\_path, atlas\_path, mask\_path) \{}
+
+  \FunctionTok{message}\NormalTok{(}\StringTok{"Loading BOLD (this may take a moment)..."}\NormalTok{)}
+\NormalTok{  bold\_arr  }\OtherTok{\textless{}{-}} \FunctionTok{as.array}\NormalTok{(}\FunctionTok{readNifti}\NormalTok{(bold\_path))}
+\NormalTok{  atlas\_vec }\OtherTok{\textless{}{-}} \FunctionTok{as.vector}\NormalTok{(}\FunctionTok{as.array}\NormalTok{(}\FunctionTok{readNifti}\NormalTok{(atlas\_path)))}
+\NormalTok{  mask\_vec  }\OtherTok{\textless{}{-}} \FunctionTok{as.vector}\NormalTok{(}\FunctionTok{as.array}\NormalTok{(}\FunctionTok{readNifti}\NormalTok{(mask\_path))) }\SpecialCharTok{\textgreater{}} \DecValTok{0}
+
+\NormalTok{  dims     }\OtherTok{\textless{}{-}} \FunctionTok{dim}\NormalTok{(bold\_arr)}
+\NormalTok{  n\_t      }\OtherTok{\textless{}{-}}\NormalTok{ dims[}\DecValTok{4}\NormalTok{]}
+\NormalTok{  bold\_mat }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(bold\_arr, }\AttributeTok{nrow =} \FunctionTok{prod}\NormalTok{(dims[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{]), }\AttributeTok{ncol =}\NormalTok{ n\_t)}
+
+\NormalTok{  bold\_mat[}\SpecialCharTok{!}\NormalTok{mask\_vec, ] }\OtherTok{\textless{}{-}} \ConstantTok{NA}
+
+\NormalTok{  roi\_ids }\OtherTok{\textless{}{-}} \FunctionTok{sort}\NormalTok{(}\FunctionTok{unique}\NormalTok{(atlas\_vec[atlas\_vec }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{]))}
+\NormalTok{  roi\_ts  }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\ConstantTok{NA}\NormalTok{, }\AttributeTok{nrow =}\NormalTok{ n\_t, }\AttributeTok{ncol =} \FunctionTok{length}\NormalTok{(roi\_ids),}
+                    \AttributeTok{dimnames =} \FunctionTok{list}\NormalTok{(}\ConstantTok{NULL}\NormalTok{, }\FunctionTok{paste0}\NormalTok{(}\StringTok{"ROI\_"}\NormalTok{, roi\_ids)))}
+
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \FunctionTok{seq\_along}\NormalTok{(roi\_ids)) \{}
+\NormalTok{    idx }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(atlas\_vec }\SpecialCharTok{==}\NormalTok{ roi\_ids[i] }\SpecialCharTok{\&}\NormalTok{ mask\_vec)}
+    \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{length}\NormalTok{(idx) }\SpecialCharTok{==} \DecValTok{0}\NormalTok{) }\ControlFlowTok{next}
+\NormalTok{    roi\_ts[, i] }\OtherTok{\textless{}{-}} \FunctionTok{colMeans}\NormalTok{(bold\_mat[idx, , }\AttributeTok{drop =} \ConstantTok{FALSE}\NormalTok{], }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{  \}}
+
+  \FunctionTok{message}\NormalTok{(}\StringTok{"Extracted "}\NormalTok{, }\FunctionTok{ncol}\NormalTok{(roi\_ts), }\StringTok{" ROI time series, "}\NormalTok{, n\_t, }\StringTok{" timepoints each."}\NormalTok{)}
+  \FunctionTok{return}\NormalTok{(roi\_ts)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 7 {-} Regress Out Noise (WM + CSF)}
+
+\NormalTok{regress\_confounds }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(roi\_ts, conf\_path) \{}
+
+\NormalTok{  conf }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(conf\_path, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{sep =} \StringTok{"}\SpecialCharTok{\textbackslash{}t}\StringTok{"}\NormalTok{, }\AttributeTok{na.strings =} \StringTok{"n/a"}\NormalTok{)}
+
+\NormalTok{  keep\_cols }\OtherTok{\textless{}{-}} \FunctionTok{intersect}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"white\_matter"}\NormalTok{, }\StringTok{"csf"}\NormalTok{), }\FunctionTok{names}\NormalTok{(conf))}
+
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{length}\NormalTok{(keep\_cols) }\SpecialCharTok{==} \DecValTok{0}\NormalTok{) \{}
+    \FunctionTok{message}\NormalTok{(}\StringTok{"No WM/CSF confounds found — skipping regression."}\NormalTok{)}
+    \FunctionTok{return}\NormalTok{(roi\_ts)}
+\NormalTok{  \}}
+
+\NormalTok{  conf\_mat }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(conf[, keep\_cols, }\AttributeTok{drop =} \ConstantTok{FALSE}\NormalTok{])}
+\NormalTok{  conf\_mat[}\FunctionTok{is.na}\NormalTok{(conf\_mat)] }\OtherTok{\textless{}{-}} \DecValTok{0}
+
+\NormalTok{  cleaned }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(roi\_ts, }\DecValTok{2}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(y) \{}
+\NormalTok{    y[}\FunctionTok{is.na}\NormalTok{(y)] }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(y, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+    \FunctionTok{residuals}\NormalTok{(}\FunctionTok{lm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ conf\_mat))}
+\NormalTok{  \})}
+
+  \FunctionTok{message}\NormalTok{(}\StringTok{"Confound regression done."}\NormalTok{)}
+  \FunctionTok{return}\NormalTok{(cleaned)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 8 {-} Bandpass Filter (keep 0.01–0.1 Hz brain rhythms)}
+
+\NormalTok{bandpass\_filter }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(ts\_mat, TR, }\AttributeTok{low =} \FloatTok{0.01}\NormalTok{, }\AttributeTok{high =} \FloatTok{0.1}\NormalTok{) \{}
+\NormalTok{  nyq }\OtherTok{\textless{}{-}}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{/}\NormalTok{ TR) }\SpecialCharTok{/} \DecValTok{2}
+\NormalTok{  bf  }\OtherTok{\textless{}{-}} \FunctionTok{butter}\NormalTok{(}\DecValTok{3}\NormalTok{, }\FunctionTok{c}\NormalTok{(low }\SpecialCharTok{/}\NormalTok{ nyq, high }\SpecialCharTok{/}\NormalTok{ nyq), }\AttributeTok{type =} \StringTok{"pass"}\NormalTok{)}
+
+\NormalTok{  filtered }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(ts\_mat, }\DecValTok{2}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(x) \{}
+\NormalTok{    x[}\FunctionTok{is.na}\NormalTok{(x)] }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(x, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+    \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{filtfilt}\NormalTok{(bf, x))}
+\NormalTok{  \})}
+
+  \FunctionTok{message}\NormalTok{(}\StringTok{"Bandpass filter applied ("}\NormalTok{, low, }\StringTok{"–"}\NormalTok{, high, }\StringTok{" Hz)."}\NormalTok{)}
+  \FunctionTok{return}\NormalTok{(filtered)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 9 {-} Compute Connectivity Matrix (Pearson correlation + Fisher\textquotesingle{}s z{-}transform)}
+
+\NormalTok{compute\_connectivity }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(roi\_ts\_clean) \{}
+\NormalTok{  r\_mat }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(roi\_ts\_clean, }\AttributeTok{use =} \StringTok{"pairwise.complete.obs"}\NormalTok{)}
+\NormalTok{  z\_mat }\OtherTok{\textless{}{-}} \FunctionTok{atanh}\NormalTok{(r\_mat)}
+  \FunctionTok{diag}\NormalTok{(z\_mat) }\OtherTok{\textless{}{-}} \DecValTok{0}
+  \FunctionTok{return}\NormalTok{(z\_mat)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 10 {-} Run The Full Pipeline For All Subjects \& Runs }
+\CommentTok{\# Note: use atlas\_resampled\_path from Step 4}
+
+\NormalTok{roi\_ts    }\OtherTok{\textless{}{-}} \FunctionTok{extract\_roi\_timeseries}\NormalTok{(bold\_path, atlas\_resampled\_path, mask\_path)}
+\NormalTok{roi\_clean }\OtherTok{\textless{}{-}} \FunctionTok{regress\_confounds}\NormalTok{(roi\_ts, conf\_path)}
+\NormalTok{roi\_filt  }\OtherTok{\textless{}{-}} \FunctionTok{bandpass\_filter}\NormalTok{(roi\_clean, TR)}
+\NormalTok{conn\_mat  }\OtherTok{\textless{}{-}} \FunctionTok{compute\_connectivity}\NormalTok{(roi\_filt)}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Connectivity matrix dimensions:"}\NormalTok{, }\FunctionTok{dim}\NormalTok{(conn\_mat), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{) }\CommentTok{\# should be 200 x 200}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Plotting the Matrices \& Storing the
+Data}\label{plotting-the-matrices-storing-the-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 11 {-} Plot The Matrix }
+
+\FunctionTok{pheatmap}\NormalTok{(}
+  \AttributeTok{mat          =}\NormalTok{ conn\_mat,}
+  \AttributeTok{cluster\_rows =} \ConstantTok{TRUE}\NormalTok{,}
+  \AttributeTok{cluster\_cols =} \ConstantTok{TRUE}\NormalTok{,}
+  \AttributeTok{color        =} \FunctionTok{colorRampPalette}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\StringTok{"white"}\NormalTok{, }\StringTok{"red"}\NormalTok{))(}\DecValTok{100}\NormalTok{),}
+  \AttributeTok{breaks       =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{101}\NormalTok{),}
+  \AttributeTok{main         =} \StringTok{"sub{-}0\# run{-}\# Connectivity Matrix (Schaefer 200 ROIs)"}\NormalTok{,}
+  \AttributeTok{show\_rownames =} \ConstantTok{FALSE}\NormalTok{,}
+  \AttributeTok{show\_colnames =} \ConstantTok{FALSE}\NormalTok{,}
+  \AttributeTok{fontsize     =} \DecValTok{8}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 12 {-} Manually Store Each Subject + Run }
+\CommentTok{\# After running Step 10 for each subject/run, store conn\_mat here.}
+\CommentTok{\# Format: all\_conn\_runs[["sub{-}XX"]][["run{-}Y"]] \textless{}{-} conn\_mat}
+\CommentTok{\# Initialize the storage list once at the start (run this only once)}
+
+\NormalTok{all\_conn\_runs }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{() }
+
+\CommentTok{\# Save after each sub \& run}
+\FunctionTok{saveRDS}\NormalTok{(all\_conn\_runs, }\StringTok{"all\_conn\_runs.rds"}\NormalTok{)}
+
+\CommentTok{\# {-}{-}{-} sub{-}01 {-}{-}{-}}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}01"}\NormalTok{]][[}\StringTok{"run{-}1"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}01"}\NormalTok{]][[}\StringTok{"run{-}2"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+
+\CommentTok{\# {-}{-}{-} sub{-}02 {-}{-}{-}}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}02"}\NormalTok{]][[}\StringTok{"run{-}1"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}02"}\NormalTok{]][[}\StringTok{"run{-}2"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+
+\CommentTok{\# {-}{-}{-} sub{-}03 {-}{-}{-}}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}03"}\NormalTok{]][[}\StringTok{"run{-}1"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}03"}\NormalTok{]][[}\StringTok{"run{-}2"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+
+\CommentTok{\# {-}{-}{-} sub{-}04 {-}{-}{-}}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}04"}\NormalTok{]][[}\StringTok{"run{-}1"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}04"}\NormalTok{]][[}\StringTok{"run{-}2"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+
+\CommentTok{\# {-}{-}{-} sub{-}05 {-}{-}{-}}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}05"}\NormalTok{]][[}\StringTok{"run{-}1"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}05"}\NormalTok{]][[}\StringTok{"run{-}2"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+
+\CommentTok{\# {-}{-}{-} sub{-}06 {-}{-}{-}}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}06"}\NormalTok{]][[}\StringTok{"run{-}1"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}06"}\NormalTok{]][[}\StringTok{"run{-}2"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+
+\CommentTok{\# {-}{-}{-} sub{-}07 {-}{-}{-}}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}07"}\NormalTok{]][[}\StringTok{"run{-}1"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}07"}\NormalTok{]][[}\StringTok{"run{-}2"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+
+\CommentTok{\# {-}{-}{-} sub{-}08 {-}{-}{-}}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}08"}\NormalTok{]][[}\StringTok{"run{-}1"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+\NormalTok{all\_conn\_runs[[}\StringTok{"sub{-}08"}\NormalTok{]][[}\StringTok{"run{-}2"}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ conn\_mat}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Check To See If Subject Is Stored Correctly }
+
+\FunctionTok{str}\NormalTok{(all\_conn\_runs)  }\CommentTok{\# double check everything is there}
+
+\CommentTok{\# Should show: List of 2 }
+\CommentTok{\#  $ run{-}1: num [1:200, 1:200] ...}
+\CommentTok{\#  $ run{-}2: num [1:200, 1:200] ...}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Statistical Analysis}\label{statistical-analysis}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 13 {-} Run{-}to{-}Run Consistency (Pearson r of upper triangle)}
+
+\CommentTok{\# Loading all the Data from the Matrix to run Steps 13 \& 14 (if not doing it all in one step)}
+\FunctionTok{library}\NormalTok{(RNifti)}
+\NormalTok{all\_conn\_runs }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(}\StringTok{"all\_conn\_runs.rds"}\NormalTok{)}
+
+\NormalTok{subjects }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\StringTok{"sub{-}0"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{8}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} Run{-}to{-}run consistency (Pearson r of upper triangle) {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+
+\ControlFlowTok{for}\NormalTok{ (sub }\ControlFlowTok{in}\NormalTok{ subjects) \{}
+\NormalTok{  mats }\OtherTok{\textless{}{-}}\NormalTok{ all\_conn\_runs[[sub]]}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{is.null}\NormalTok{(mats[[}\StringTok{"run{-}1"}\NormalTok{]]) }\SpecialCharTok{||} \FunctionTok{is.null}\NormalTok{(mats[[}\StringTok{"run{-}2"}\NormalTok{]])) \{}
+    \FunctionTok{cat}\NormalTok{(sub, }\StringTok{": missing a run — skipping}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+    \ControlFlowTok{next}
+\NormalTok{  \}}
+\NormalTok{  idx }\OtherTok{\textless{}{-}} \FunctionTok{upper.tri}\NormalTok{(mats[[}\StringTok{"run{-}1"}\NormalTok{]])}
+\NormalTok{  r   }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(mats[[}\StringTok{"run{-}1"}\NormalTok{]][idx], mats[[}\StringTok{"run{-}2"}\NormalTok{]][idx])}
+  \FunctionTok{cat}\NormalTok{(sub, }\StringTok{": r ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(r, }\DecValTok{3}\NormalTok{), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\}}
+\CommentTok{\# Values \textgreater{} 0.7 suggest the matrix is stable enough for clinical use}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 14 {-} Average Runs Per Subject (once both runs are stored)}
+
+\NormalTok{all\_conn }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (sub }\ControlFlowTok{in}\NormalTok{ subjects) \{}
+\NormalTok{  mats }\OtherTok{\textless{}{-}}\NormalTok{ all\_conn\_runs[[sub]]}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{is.null}\NormalTok{(mats)) }\ControlFlowTok{next}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(mats[[}\StringTok{"run{-}1"}\NormalTok{]]) }\SpecialCharTok{\&\&} \SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(mats[[}\StringTok{"run{-}2"}\NormalTok{]])) \{}
+\NormalTok{    all\_conn[[sub]] }\OtherTok{\textless{}{-}}\NormalTok{ (mats[[}\StringTok{"run{-}1"}\NormalTok{]] }\SpecialCharTok{+}\NormalTok{ mats[[}\StringTok{"run{-}2"}\NormalTok{]]) }\SpecialCharTok{/} \DecValTok{2}
+    \FunctionTok{cat}\NormalTok{(sub, }\StringTok{": averaged across runs}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{  \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(mats[[}\StringTok{"run{-}1"}\NormalTok{]])) \{}
+\NormalTok{    all\_conn[[sub]] }\OtherTok{\textless{}{-}}\NormalTok{ mats[[}\StringTok{"run{-}1"}\NormalTok{]]}
+    \FunctionTok{cat}\NormalTok{(sub, }\StringTok{": only run{-}1 available}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{  \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(mats[[}\StringTok{"run{-}2"}\NormalTok{]])) \{}
+\NormalTok{    all\_conn[[sub]] }\OtherTok{\textless{}{-}}\NormalTok{ mats[[}\StringTok{"run{-}2"}\NormalTok{]]}
+    \FunctionTok{cat}\NormalTok{(sub, }\StringTok{": only run{-}2 available}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\FunctionTok{saveRDS}\NormalTok{(all\_conn, }\StringTok{"all\_conn\_averaged.rds"}\NormalTok{)}
+
+\CommentTok{\# Loading all the Data from the Matrix to run Steps 13 \& 14}
+\FunctionTok{library}\NormalTok{(RNifti)}
+\NormalTok{all\_conn\_runs }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(}\StringTok{"all\_conn\_runs.rds"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Precentral Gyrus ROI
+Analysis}\label{precentral-gyrus-roi-analysis}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# In Schaefer 200 parcels, Somatomotor network ROIs (roughly ROI 30{-}67) cover precentral gyrus / primary motor cortex.}
+\CommentTok{\# We target the core precentral gyrus ROIs specifically.}
+
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(pheatmap)}
+
+\CommentTok{\# These are the Somatomotor network ROI indices in Schaefer 200 that correspond to precentral gyrus / M1}
+\NormalTok{precentral\_rois }\OtherTok{\textless{}{-}} \DecValTok{30}\SpecialCharTok{:}\DecValTok{67} \CommentTok{\# Somatomotor network parcels}
+
+\NormalTok{roi\_names }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\StringTok{"ROI\_"}\NormalTok{, precentral\_rois)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 1 {-} Extract Mean Connectivity Of Precentral Gyrus (how strongly is M1 connected to the rest of the brain on average per sub)}
+
+\NormalTok{subjects }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\StringTok{"sub{-}0"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{8}\NormalTok{)}
+
+\NormalTok{precentral\_conn }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(subjects, }\ControlFlowTok{function}\NormalTok{(sub) \{}
+\NormalTok{  mat  }\OtherTok{\textless{}{-}}\NormalTok{ all\_conn[[sub]]                         }\CommentTok{\# 200 x 200 matrix}
+\NormalTok{  idx  }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(mat) }\SpecialCharTok{\%in\%}\NormalTok{ roi\_names)     }\CommentTok{\# find precentral ROIs}
+  \CommentTok{\# Mean connectivity of precentral ROIs to ALL other ROIs}
+  \FunctionTok{mean}\NormalTok{(mat[idx, }\SpecialCharTok{{-}}\NormalTok{idx], }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{\})}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} Mean Precentral Gyrus Connectivity per Subject {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{round}\NormalTok{(precentral\_conn, }\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 2 {-} Bar Plot: Precentral Connectivity Per Subject}
+
+\NormalTok{df\_bar }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Subject     =} \FunctionTok{names}\NormalTok{(precentral\_conn),}
+  \AttributeTok{Connectivity =} \FunctionTok{as.numeric}\NormalTok{(precentral\_conn)}
+\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{(df\_bar, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Subject, }\AttributeTok{y =}\NormalTok{ Connectivity, }\AttributeTok{fill =}\NormalTok{ Connectivity)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{, }\AttributeTok{width =} \FloatTok{0.6}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_gradient2}\NormalTok{(}\AttributeTok{low =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{mid =} \StringTok{"white"}\NormalTok{, }\AttributeTok{high =} \StringTok{"red"}\NormalTok{, }\AttributeTok{midpoint =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{mean}\NormalTok{(precentral\_conn), }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{,}
+             \AttributeTok{color =} \StringTok{"black"}\NormalTok{, }\AttributeTok{linewidth =} \FloatTok{0.8}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\AttributeTok{x =} \FloatTok{0.6}\NormalTok{, }\AttributeTok{y =} \FunctionTok{mean}\NormalTok{(precentral\_conn) }\SpecialCharTok{+} \FloatTok{0.005}\NormalTok{,}
+           \AttributeTok{label =} \StringTok{"Group mean"}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{size =} \FloatTok{3.5}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title    =} \StringTok{"Mean Precentral Gyrus (M1) Connectivity per Subject"}\NormalTok{,}
+    \AttributeTok{subtitle =} \StringTok{"Higher values = stronger motor cortex integration}\SpecialCharTok{\textbackslash{}n}\StringTok{Relevant for Parkinson\textquotesingle{}s \& Stroke detection via ME{-}ICA"}\NormalTok{,}
+    \AttributeTok{x        =} \StringTok{"Subject"}\NormalTok{,}
+    \AttributeTok{y        =} \StringTok{"Mean Fisher z (connectivity to rest of brain)"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_classic}\NormalTok{(}\AttributeTok{base\_size =} \DecValTok{13}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 3 {-} Heatmap: Precentral Gyrus ROI Connectivity (across the group {-} which M1 parcels are most connected?)}
+
+\NormalTok{group\_avg }\OtherTok{\textless{}{-}} \FunctionTok{Reduce}\NormalTok{(}\StringTok{"+"}\NormalTok{, all\_conn) }\SpecialCharTok{/} \FunctionTok{length}\NormalTok{(all\_conn)}
+
+\NormalTok{idx }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(group\_avg) }\SpecialCharTok{\%in\%}\NormalTok{ roi\_names)}
+
+\NormalTok{precentral\_mat }\OtherTok{\textless{}{-}}\NormalTok{ group\_avg[idx, idx]}
+
+\FunctionTok{pheatmap}\NormalTok{(}
+  \AttributeTok{mat           =}\NormalTok{ precentral\_mat,}
+  \AttributeTok{cluster\_rows  =} \ConstantTok{TRUE}\NormalTok{,}
+  \AttributeTok{cluster\_cols  =} \ConstantTok{TRUE}\NormalTok{,}
+  \AttributeTok{color         =} \FunctionTok{colorRampPalette}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\StringTok{"white"}\NormalTok{, }\StringTok{"red"}\NormalTok{))(}\DecValTok{100}\NormalTok{),}
+  \AttributeTok{breaks        =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{101}\NormalTok{),}
+  \AttributeTok{main          =} \StringTok{"Precentral Gyrus (M1) Inter{-}ROI Connectivity}\SpecialCharTok{\textbackslash{}n}\StringTok{(Group Average, Schaefer 200)"}\NormalTok{,}
+  \AttributeTok{show\_rownames =} \ConstantTok{FALSE}\NormalTok{,}
+  \AttributeTok{show\_colnames =} \ConstantTok{FALSE}\NormalTok{,}
+  \AttributeTok{fontsize      =} \DecValTok{9}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 4 {-} Find Top 10 Strongest Connections To M1 (which brain regions are most connected to motor cortex?)}
+
+\NormalTok{non\_idx }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{colnames}\NormalTok{(group\_avg) }\SpecialCharTok{\%in\%}\NormalTok{ roi\_names)}
+
+\CommentTok{\# Average connectivity from each non{-}M1 ROI to all M1 ROIs}
+\NormalTok{conn\_to\_m1 }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(non\_idx, }\ControlFlowTok{function}\NormalTok{(j) \{}
+  \FunctionTok{mean}\NormalTok{(group\_avg[idx, j], }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{\})}
+
+\FunctionTok{names}\NormalTok{(conn\_to\_m1) }\OtherTok{\textless{}{-}} \FunctionTok{colnames}\NormalTok{(group\_avg)[non\_idx]}
+\NormalTok{top10 }\OtherTok{\textless{}{-}} \FunctionTok{sort}\NormalTok{(conn\_to\_m1, }\AttributeTok{decreasing =} \ConstantTok{TRUE}\NormalTok{)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{]}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} Top 10 ROIs Most Connected to Precentral Gyrus {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{round}\NormalTok{(top10, }\DecValTok{3}\NormalTok{))}
+
+\CommentTok{\# Plot it}
+\NormalTok{df\_top }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{ROI          =} \FunctionTok{factor}\NormalTok{(}\FunctionTok{names}\NormalTok{(top10), }\AttributeTok{levels =} \FunctionTok{rev}\NormalTok{(}\FunctionTok{names}\NormalTok{(top10))),}
+  \AttributeTok{Connectivity =} \FunctionTok{as.numeric}\NormalTok{(top10)}
+\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{(df\_top, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ROI, }\AttributeTok{y =}\NormalTok{ Connectivity, }\AttributeTok{fill =}\NormalTok{ Connectivity)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_gradient}\NormalTok{(}\AttributeTok{low =} \StringTok{"lightblue"}\NormalTok{, }\AttributeTok{high =} \StringTok{"darkblue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{coord\_flip}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title    =} \StringTok{"Top 10 ROIs Most Connected to Precentral Gyrus (M1)"}\NormalTok{,}
+    \AttributeTok{subtitle =} \StringTok{"Group average | Handgrasp task fMRI | Schaefer 200"}\NormalTok{,}
+    \AttributeTok{x        =} \StringTok{"ROI"}\NormalTok{,}
+    \AttributeTok{y        =} \StringTok{"Mean Fisher z to M1"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_classic}\NormalTok{(}\AttributeTok{base\_size =} \DecValTok{12}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

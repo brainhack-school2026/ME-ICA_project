@@ -4,7 +4,7 @@ Can ME-ICA generate a consistent subject-level connectivity matrix for individua
 
 Using openneuro for the dataset here: https://github.com/OpenNeuroDatasets/ds007661 / https://openneuro.org/datasets/ds007661/versions/1.0.0 
 
-To see the full and final code --> Go into the "notebooks" file and check out the R markdown (html/Rmd) file
+To see the full and final code --> Go into the "notebooks" file and check out and download the R markdown (html/Rmd) files
 
 Our aim is to address the following: --> 
 1. Generate and examine group-level functional connectivity matrix from 8 subjects during a hand-grasp task by examining connectivity between the primary motor cortex (precentral gyrus/M1) and the rest of the brain. 

@@ -15,7 +15,7 @@ Project idea by: John Lio, Arshiya Khurmi, Kelei Xiao, Pirinthiya Thayaparan
 
 Project Definition
 
-Background
+Background:
 
 Our group -->
 We are a group of undergraduate students conducting summer projects at the Centre for Addiction and Mental Health (CAMH) as a part of the Institute of Medical Science at the University of Toronto’s Summer Undergraduate Research Program (IMS SURP). Collectively, our summer projects focus on the various neurobiological mechanisms and outcomes associated with psychiatric conditions.
@@ -35,7 +35,7 @@ This project uses fMRI data from a study completed by Reddy et al., which aims t
 Deliverables -->
 This project will produce a GitHub repository containing all figures, connectivity matrices, ROI analyses, and R markdown files.
 
-Results
+Results:
 
 Progress overview -->
 The final presentation of this project was delivered on June 5, 2026. All planned deliverables were completed and are available in the project’s GitHub repository.
@@ -48,7 +48,7 @@ Github & Git: We learned how to use git push, git pull, and git commit to keep o
 Deliverables -->
 Our main deliverables are available in a GitHub repository containing all figures, connectivity matrices, ROI analyses, and R markdown files. (https://github.com/brainhack-school2026/ME-ICA_project)
 
-Conclusion
+Conclusion:
 
 Acknowledgements -->
 We would like to thank BrainHack School 2026 for providing us with immense amounts of support throughout our project. Particularly we are grateful for the TA team, who were particularly compassionate in their feedback and mentorship as we navigated the learning experience.

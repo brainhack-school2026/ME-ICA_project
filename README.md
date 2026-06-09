@@ -1,5 +1,6 @@
 # ME-ICA_project
 Task-Based Functional Connectivity for ME-ICA:
+
 Can ME-ICA generate a consistent subject-level connectivity matrix for individuals with high task-correlated motion that is robust enough for clinical diagnostic use, such as in chronic stroke or Parkinson’s patients?
 
 Can group-level connectivity of the precentral gyrus establish a healthy baseline for the hand-grasp network to help identify disruptions in stroke and Parkinson’s patients?

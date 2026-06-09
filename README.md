@@ -32,7 +32,7 @@ Github: Communication and storage of project files
 Data -->
 This project uses fMRI data from a study completed by Reddy et al., which aims to compare ME-ICA with other denoising tools in addressing noise associated with task-correlated motion. (https://doi.org/10.1101/2023.07.19.549746)
 
-Deliverables
+Deliverables -->
 This project will produce a GitHub repository containing all figures, connectivity matrices, ROI analyses, and R markdown files.
 
 Results
